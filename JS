@@ -1,0 +1,437 @@
+
+//QuickSort
+{
+    function QuickSort(arr, left, right) {
+        let len = arr.length;
+        let partionIndex;
+        if(left >= right) {
+            return arr;
+        }
+    
+        partionIndex = Partion(arr, left, right);
+        QuickSort(arr, 0, partionIndex - 1);
+        QuickSort(arr, partionIndex + 1, right);
+        return arr;
+    }
+    
+    function Partion(arr, left, right) {
+        let pivot = left;
+        let index = pivot + 1;
+        for(let i = index; i < right; i++){
+            if(arr[i] < arr[pivot]) {
+                Swap(arr, i, index);
+                index++;
+            }
+        }
+        Swap(arr, pivot, index - 1);
+        return index - 1;
+    }
+    
+    function Swap(arr, i, j){
+        let temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+    
+    let arr = [4,3,2,7,6,5,1,9];
+    
+    QuickSort(arr, 0, arr.length);
+    console.log(arr);
+}
+
+//InsertionSort
+{
+    function InsertionSort(arr) {
+        let len = arr.length;
+        let preIndex, current;
+        for(let i = 1; i < len; i++) {
+            preIndex = i - 1;
+            current = arr[i];
+            while(preIndex >= 0 && arr[preIndex] > current) {
+                arr[preIndex + 1] = arr[preIndex];
+                preIndex--;
+            }
+            arr[preIndex + 1] = current;
+        }
+
+        return arr;
+    }
+
+    let arr = [8,5,0,6,4,3,2,1,9,10];
+    InsertionSort(arr);
+    console.log(arr);
+}
+
+//MergeSort
+{
+    function MergeSort(arr) {
+        let len = arr.length;
+        if(len < 2) {
+            return arr;
+        }
+
+        let middle = Math.floor(len / 2);
+        let left = arr.slice(0, middle);
+        let right = arr.slice(middle);
+
+        return Merge(MergeSort(left), MergeSort(right));
+    }
+
+    function Merge(left, right) {
+
+        let result = [];
+        
+        while(left.length && right.length) {
+            if(left[0] <= right[0]) {
+                result.push(left.shift());
+            } else {
+                result.push(right.shift());
+            }
+        }
+
+        while(left.length) {
+            result.push(left.shift());
+        }
+
+        while(right.length) {
+            result.push(right.shift());
+        }
+
+        return result;
+    }
+
+    let arr = [8,5,0,6,4,3,2,1,9,10];
+    MergeSort(arr);
+    console.log(arr);
+}
+
+//HeapSort
+{   
+   var len;
+   function Heapify(arr, index) {
+       let leftIndex = 2 * index;
+       let rightIndex = 2 * index + 1;
+       let largest = index;
+       if(leftIndex <= len && arr[leftIndex] > arr[largest]) {
+         largest = leftIndex;
+       } else {
+           largest = index;
+       }
+
+       if(rightIndex <= len && arr[rightIndex] > arr[largest]) {
+           largest = rightIndex;
+       }
+
+       if(largest != index) {
+           Swap(arr, largest, index);
+           Heapify(arr, largest);
+       }
+   }
+
+   function BuildMaxHeap(arr) {
+       len = arr.length - 1;
+       for(let i = Math.floor(len / 2); i >= 1; i--) {
+           Heapify(arr, i);
+       }
+   }
+
+   function HeapSort(arr) {
+       BuildMaxHeap(arr);
+
+       for(let i = arr.length - 1; i > 1; i--) {
+           Swap(arr, 1, i);
+           len--;
+           Heapify(arr, 1);
+       }
+       return arr.slice(1);
+   }
+
+   function Swap(arr, i, j) {
+    let temp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = temp;
+   }
+
+   let arr = [0,8,5,0,6,4,3,2,1,9,7]; 
+   let arr1 =  HeapSort(arr);
+   console.log(arr1);
+}
+
+//BinarySearchTree
+{
+    var TreeNode = function(key, parent, left, right) {
+        this.parent = parent;
+        this.left = left;
+        this.right = right;
+        this.key = key;
+    }
+
+    var BinarySearchTree = function() { 
+        this.root = null;
+    }
+
+    BinarySearchTree.prototype.treeSearch = function(root, k) {
+        while(root != null && k != root.key) {
+            if(k >= root.key) {
+                root = root.right;
+            } else {
+                root = root.left;
+            }
+        }
+        return root;
+    }
+
+    BinarySearchTree.prototype.treeMinimum = function(root) {
+        while(root.left != null) {
+            root = root.left;
+        }
+        return root;
+    }
+
+    BinarySearchTree.prototype.treeInsert = function(tree, node) {
+        
+        y = null;
+        x = tree.root;
+        while(x != null) {
+            y = x;
+            if(node.key < x.key) {
+                x = x.left;
+            } else {
+                x = x.right;
+            }
+        }
+
+        node.parent = y;
+        if(y == null) {
+            tree.root = node;
+        } else if(node.key < y.key) {
+            y.left = node;
+        } else {
+            y.right = node;
+        }
+    }
+
+    BinarySearchTree.prototype.treeTransplant = function(tree, u, v) {
+        if(u.parent == null) {
+            tree.root = v;
+        } else if(u == u.parent.left) {
+            u.parent.left = v;
+        } else {
+            u.parent.right = v;
+        }
+        if(v != null) {
+            v.parent = u.parent;
+        }
+    }
+
+    BinarySearchTree.prototype.treeDelete = function(tree, deleteNode) {
+        if(deleteNode.left == null) {
+            this.treeTransplant(tree, deleteNode, deleteNode.right);
+        } else if(deleteNode.right == null) {
+            this.treeTransplant(tree, deleteNode, deleteNode.left);
+        } else {
+            y = this.treeMinimum(deleteNode.right);
+            if(y.parent != deleteNode) {
+                this.treeTransplant(tree, y, y.right);
+                y.right = deleteNode.right;
+                y.right.parent = y;
+            }
+            this.treeTransplant(tree, deleteNode, y);
+            y.left = deleteNode.left;
+            y.left.parent = y;
+        }
+    }
+
+    let binarySearchTree = new BinarySearchTree();
+    let arr = [5,3,7,1,2,4,8,9,12,11,10];
+    arr.forEach((elem) => {
+        let treeNode = new TreeNode(elem);
+        binarySearchTree.treeInsert(binarySearchTree, treeNode);
+    })
+    console.log(binarySearchTree);
+}
+
+Function.prototype.myCall = function(obj) {
+    obj = obj || window;
+    obj.fn = this;
+    let args = [...arguments].slice(1);
+    let result = obj.fn(...args);
+    delete obj.fn;
+    return result; 
+}
+
+Function.prototype.myApply = function(obj, arr) {
+    obj = obj ? Object(obj) : window;
+    obj.fn = this;
+    let result;
+    if(!arr) {
+        result = obj.fn();
+    } else {
+        obj.fn(...arr);
+    }
+    delete obj.fn;
+    return result;
+}
+
+Function.prototype.myBind = function(obj) {
+    if(typeof this !== 'Function') {
+        throw new Error("Function.prototype.bind - what is trying to be bound is not callable");
+    };
+
+    let fn = this;
+    let args = Array.prototype.slice.call(arguments, 1);
+    let bound = function() {
+        let params = Array.prototype.slice.call(arguments);
+        fn.apply(obj, args.concat(params));
+    };
+    return bound;
+}
+
+// 实例
+var obj = {
+    name: "zpl",
+    fn: function() {
+      console.log("我的名字是" + this.name);
+    }
+  }
+  
+  var name = "zs";
+  obj.fn();//我的名字是zpl
+  obj.fn.bind({name: "yz"})();//我的名字是yz
+  var bound = obj.fn.bind({name: "ying"});
+  var b = new bound();//我的名字是undefined
+
+  let Father = function(name) {
+      this.name = name;
+  }
+
+  let Son = function(name) {
+    Father.bind(this, name);
+  }
+  Son.prototype = Father.prototype;
+  let son = new Son("name");
+
+  class Super {
+      constructor() {
+
+      }
+
+      eat() {
+          console.log("eat");
+      }
+  }
+
+  class Suber extends Super {
+      constructor() {
+        super();
+      }
+
+      run() {
+          console.log("run");
+      }
+  }
+
+  let sub = new Suber();
+  let sup = new Super();
+
+  sub.__proto__;
+  sup.__proto__;
+
+//作用域：一个变量的合法使用范围
+//自由变量： 一个变量不是在当前作用域内定义，但被使用到了
+//          向上级作用域一层一层依次寻找，直到找到为止
+//          如果直到全局作用域都没找到，则报错xx is not defined
+function fn1() {
+    let a = 100;
+    function fn2() {
+        let b = 200;
+        function fn3() {
+            let c = 300;
+            return a + b + c;
+        }
+        fn3();
+    }
+    fn2();
+}
+fn1();
+
+//闭包
+//1.函数作为返回值是会产生闭包
+function create() {
+    let a = 10;
+    let fn = function () {
+        console.log(a);
+    }
+    return fn;
+}
+let fn = create();
+let a = 200;
+fn();
+//2.函数作为参数会产生闭包
+function print(fn) {
+    let a = 200;
+    fn();
+}
+let a = 100;
+function fn() {
+    console.log(a);
+}
+//产生闭包：1.js是静态的词法作用域，引用的变量是在函数定义的位置 2.函数是一等公民，可以作为参数，返回值，和其他变量拥有一样的地位去使用
+            //3.函数不在它声明的作用域使用
+let i, a;
+for(i = 0; i < 10; i++) {
+    a = document.createElement('a');
+    a.innerHTML = i + '<br>';
+    a.addEventListener('click', function (e) {
+        e.preventDefault();
+        alert(i);
+    })
+    document.body.appendChild(a);
+}
+
+//this场景
+//this有几种调用场景，作为普通函数去调用，作为call apply bind去调用,作为对象方法被调用 在class方法中调用 箭头函数中
+//this的取值和闭包情况下的变量“想法”，它是在函数调用的时候取值的，也就是它指向调用该函数的对象
+
+//1.作为普通函数调用的情况下，this指向window，严格模式下，this是undefined
+
+function fn() {
+    console.log(this);
+}
+//2.但是如果用call，apply，bind函数，则this会指向绑定的那个对象
+fn.call({val:100});
+//3.作为对象方法去调用
+widnow.name = "window";
+const Lee = {
+    name : "lee",
+    wait() {
+        //setTimeout执行时，this会指向window
+        setTimeout(function () {
+            console.log(this.name);
+        },1000);
+    },
+    sayHi() {
+        console.log(`Hi!, my name is ${this.name}`);
+    },
+}
+
+Lee.sayHi();
+Lee.wait();
+//4.这引出了第4种调用方法，箭头函数调用，箭头函数的this始终指向定义时的外部作用域，因此，把settimout函数的callback函数改为箭头函数，那么this的指向就不会发生改变
+window.name = "window";
+const Lee = {
+    name : "lee",
+    wait() {
+        //setTimeout执行时，this会指向window
+        setTimeout(() => {
+            console.log(this.name);
+        },1000);
+    },
+    sayHi() {
+        console.log(`Hi!, my name is ${this.name}`);
+    },
+}
+
+Lee.sayHi();
+Lee.wait();
+//5.class内与第三种情况类似
